@@ -1,7 +1,6 @@
 //! Various traits that are implemented by ast nodes.
 //!
 //! The implementations are usually trivial, and live in generated.rs
-use stdx::SepBy;
 
 use crate::{
     ast::{self, support, AstChildren, AstNode, AstToken},
@@ -76,54 +75,9 @@ pub trait AttrsOwner: AstNode {
     fn has_atom_attr(&self, atom: &str) -> bool {
         self.attrs().filter_map(|x| x.as_simple_atom()).any(|x| x == atom)
     }
-}
 
-pub trait DocCommentsOwner: AstNode {
     fn doc_comments(&self) -> CommentIter {
         CommentIter { iter: self.syntax().children_with_tokens() }
-    }
-
-    /// Returns the textual content of a doc comment block as a single string.
-    /// That is, strips leading `///` (+ optional 1 character of whitespace),
-    /// trailing `*/`, trailing whitespace and then joins the lines.
-    fn doc_comment_text(&self) -> Option<String> {
-        let mut has_comments = false;
-        let docs = self
-            .doc_comments()
-            .filter(|comment| comment.kind().doc.is_some())
-            .map(|comment| {
-                has_comments = true;
-                let prefix_len = comment.prefix().len();
-
-                let line: &str = comment.text().as_str();
-
-                // Determine if the prefix or prefix + 1 char is stripped
-                let pos =
-                    if let Some(ws) = line.chars().nth(prefix_len).filter(|c| c.is_whitespace()) {
-                        prefix_len + ws.len_utf8()
-                    } else {
-                        prefix_len
-                    };
-
-                let end = if comment.kind().shape.is_block() && line.ends_with("*/") {
-                    line.len() - 2
-                } else {
-                    line.len()
-                };
-
-                // Note that we do not trim the end of the line here
-                // since whitespace can have special meaning at the end
-                // of a line in markdown.
-                line[pos..end].to_owned()
-            })
-            .sep_by("\n")
-            .to_string();
-
-        if has_comments {
-            Some(docs)
-        } else {
-            None
-        }
     }
 }
 

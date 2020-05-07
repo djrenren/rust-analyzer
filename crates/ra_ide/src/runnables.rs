@@ -8,8 +8,8 @@ use ra_syntax::{
     match_ast, SyntaxNode, TextRange,
 };
 
+use crate::display::HasDocs;
 use crate::FileId;
-use ast::DocCommentsOwner;
 use std::fmt::Display;
 
 #[derive(Debug)]
@@ -83,7 +83,7 @@ fn runnable_fn(sema: &Semantics<RootDatabase>, fn_def: ast::FnDef) -> Option<Run
             RunnableKind::Test { test_id, attr }
         } else if fn_def.has_atom_attr("bench") {
             RunnableKind::Bench { test_id }
-        } else if has_doc_test(&fn_def) {
+        } else if has_doc_test(&sema, &fn_def) {
             RunnableKind::DocTest { test_id }
         } else {
             return None;
@@ -121,8 +121,12 @@ fn has_test_related_attribute(fn_def: &ast::FnDef) -> bool {
         .any(|attribute_text| attribute_text.contains("test"))
 }
 
-fn has_doc_test(fn_def: &ast::FnDef) -> bool {
-    fn_def.doc_comment_text().map_or(false, |comment| comment.contains("```"))
+fn has_doc_test(sema: &Semantics<RootDatabase>, fn_def: &ast::FnDef) -> bool {
+    let hir_def = match sema.to_def(fn_def) {
+        None => return false,
+        Some(it) => it,
+    };
+    hir_def.docs(sema.db).map_or(false, |doc| doc.as_str().contains("```"))
 }
 
 fn runnable_mod(sema: &Semantics<RootDatabase>, module: ast::Module) -> Option<Runnable> {

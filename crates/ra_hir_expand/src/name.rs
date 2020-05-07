@@ -157,6 +157,7 @@ pub mod known {
         future,
         result,
         boxed,
+        doc,
         // Components of known path (type name)
         IntoIterator,
         Item,

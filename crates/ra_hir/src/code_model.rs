@@ -7,7 +7,6 @@ use hir_def::{
     adt::StructKind,
     adt::VariantData,
     builtin_type::BuiltinType,
-    docs::Documentation,
     expr::{BindingAnnotation, Pat, PatId},
     per_ns::PerNs,
     resolver::{HasResolver, Resolver},
@@ -1403,16 +1402,6 @@ impl<T: Into<AttrDef>> HasAttrs for T {
     fn attrs(self, db: &dyn HirDatabase) -> Attrs {
         let def: AttrDef = self.into();
         db.attrs(def.into())
-    }
-}
-
-pub trait Docs {
-    fn docs(&self, db: &dyn HirDatabase) -> Option<Documentation>;
-}
-impl<T: Into<AttrDef> + Copy> Docs for T {
-    fn docs(&self, db: &dyn HirDatabase) -> Option<Documentation> {
-        let def: AttrDef = (*self).into();
-        db.documentation(def.into())
     }
 }
 

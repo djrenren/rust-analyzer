@@ -740,7 +740,7 @@ impl ModCollector<'_, '_> {
     }
 
     fn collect_module(&mut self, module: &raw::ModuleData, attrs: &Attrs) {
-        let path_attr = attrs.by_key("path").string_value();
+        let path_attr = attrs.by_key("path").string_values().last();
         let is_macro_use = attrs.by_key("macro_use").exists();
         match module {
             // inline module, just recurse

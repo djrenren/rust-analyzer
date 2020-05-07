@@ -7,7 +7,8 @@ use std::{
     fmt::{self, Display},
 };
 
-use hir::{Docs, Documentation, HasSource, HirDisplay};
+use super::documentation::{Documentation, HasDocs};
+use hir::{HasSource, HirDisplay};
 use ra_ide_db::RootDatabase;
 use ra_syntax::ast::{self, AstNode, NameOwner, VisibilityOwner};
 use stdx::SepBy;

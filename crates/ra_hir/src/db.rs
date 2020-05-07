@@ -2,9 +2,9 @@
 
 pub use hir_def::db::{
     AttrsQuery, BodyQuery, BodyWithSourceMapQuery, ConstDataQuery, CrateDefMapQueryQuery,
-    CrateLangItemsQuery, DefDatabase, DefDatabaseStorage, DocumentationQuery, EnumDataQuery,
-    ExprScopesQuery, FunctionDataQuery, GenericParamsQuery, ImplDataQuery, InternConstQuery,
-    InternDatabase, InternDatabaseStorage, InternEnumQuery, InternFunctionQuery, InternImplQuery,
+    CrateLangItemsQuery, DefDatabase, DefDatabaseStorage, EnumDataQuery, ExprScopesQuery,
+    FunctionDataQuery, GenericParamsQuery, ImplDataQuery, InternConstQuery, InternDatabase,
+    InternDatabaseStorage, InternEnumQuery, InternFunctionQuery, InternImplQuery,
     InternStaticQuery, InternStructQuery, InternTraitQuery, InternTypeAliasQuery, InternUnionQuery,
     LangItemQuery, ModuleLangItemsQuery, RawItemsQuery, StaticDataQuery, StructDataQuery,
     TraitDataQuery, TypeAliasDataQuery, UnionDataQuery,

@@ -1,6 +1,7 @@
 //! This modules takes care of rendering various definitions as completion items.
 
-use hir::{Docs, HasAttrs, HasSource, HirDisplay, ModPath, ScopeDef, StructKind, Type};
+use crate::display::HasDocs;
+use hir::{HasAttrs, HasSource, HirDisplay, ModPath, ScopeDef, StructKind, Type};
 use ra_syntax::ast::NameOwner;
 use stdx::SepBy;
 use test_utils::tested_by;

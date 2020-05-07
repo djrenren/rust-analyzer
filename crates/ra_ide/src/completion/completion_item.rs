@@ -1,12 +1,11 @@
 //! FIXME: write short doc here
 
-use std::fmt;
-
-use hir::Documentation;
 use ra_syntax::TextRange;
 use ra_text_edit::TextEdit;
+use std::fmt;
 
 use crate::completion::completion_config::SnippetCap;
+use crate::display::Documentation;
 
 /// `CompletionItem` describes a single completion variant in the editor pop-up.
 /// It is basically a POD with various properties. To construct a

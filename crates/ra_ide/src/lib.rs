@@ -68,7 +68,7 @@ pub use crate::{
         CompletionConfig, CompletionItem, CompletionItemKind, CompletionScore, InsertTextFormat,
     },
     diagnostics::Severity,
-    display::{file_structure, FunctionSignature, NavigationTarget, StructureNode},
+    display::{file_structure, Documentation, FunctionSignature, NavigationTarget, StructureNode},
     expand_macro::ExpandedMacro,
     folding_ranges::{Fold, FoldKind},
     hover::HoverResult,
@@ -81,7 +81,6 @@ pub use crate::{
     },
 };
 
-pub use hir::Documentation;
 pub use ra_assists::AssistId;
 pub use ra_db::{
     Canceled, CrateGraph, CrateId, Edition, FileId, FilePosition, FileRange, SourceRootId,

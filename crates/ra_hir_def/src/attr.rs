@@ -3,7 +3,7 @@
 use std::{ops, sync::Arc};
 
 use either::Either;
-use hir_expand::{hygiene::Hygiene, AstId, InFile};
+use hir_expand::{hygiene::Hygiene, name, AstId, InFile};
 use mbe::ast_to_token_tree;
 use ra_cfg::CfgOptions;
 use ra_syntax::{
@@ -13,7 +13,11 @@ use ra_syntax::{
 use tt::Subtree;
 
 use crate::{
-    db::DefDatabase, nameres::ModuleSource, path::ModPath, src::HasChildSource, src::HasSource,
+    db::DefDatabase,
+    nameres::ModuleSource,
+    path::{ModPath, PathKind},
+    src::HasChildSource,
+    src::HasSource,
     AdtId, AttrDefId, Lookup,
 };
 
@@ -87,12 +91,13 @@ impl Attrs {
     }
 
     pub(crate) fn new(owner: &dyn AttrsOwner, hygiene: &Hygiene) -> Attrs {
+        let mut docs = owner.doc_comments().filter_map(Attr::from_comment).peekable();
         let mut attrs = owner.attrs().peekable();
-        let entries = if attrs.peek().is_none() {
+        let entries = if attrs.peek().is_none() && docs.peek().is_none() {
             // Avoid heap allocation
             None
         } else {
-            Some(attrs.flat_map(|ast| Attr::from_src(ast, hygiene)).collect())
+            Some(attrs.flat_map(|ast| Attr::from_src(ast, hygiene)).chain(docs).collect())
         };
         Attrs { entries }
     }
@@ -138,6 +143,13 @@ impl Attr {
 
         Some(Attr { path, input })
     }
+
+    fn from_comment(ast: ast::Comment) -> Option<Attr> {
+        let input = Some(AttrInput::Literal(ast.doc_comment_text()?.into()));
+        let path = ModPath { kind: PathKind::Plain, segments: vec![name::known::doc] };
+
+        Some(Attr { path, input })
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -154,8 +166,8 @@ impl<'a> AttrQuery<'a> {
         })
     }
 
-    pub fn string_value(self) -> Option<&'a SmolStr> {
-        self.attrs().find_map(|attr| match attr.input.as_ref()? {
+    pub fn string_values(self) -> impl Iterator<Item = &'a SmolStr> {
+        self.attrs().filter_map(|attr| match attr.input.as_ref()? {
             AttrInput::Literal(it) => Some(it),
             _ => None,
         })

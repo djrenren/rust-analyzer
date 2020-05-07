@@ -31,7 +31,7 @@
 //! }
 //! ```
 
-use hir::{self, Docs, HasSource};
+use hir::{self, HasSource};
 use ra_assists::utils::get_missing_assoc_items;
 use ra_syntax::{
     ast::{self, edit, ImplDef},
@@ -43,7 +43,7 @@ use crate::{
     completion::{
         CompletionContext, CompletionItem, CompletionItemKind, CompletionKind, Completions,
     },
-    display::FunctionSignature,
+    display::{FunctionSignature, HasDocs},
 };
 
 pub(crate) fn complete_trait_impl(acc: &mut Completions, ctx: &CompletionContext) {

@@ -1,6 +1,7 @@
 //! Logic for computing info that is displayed when the user hovers over any
 //! source code items (e.g. function call, struct field, variable symbol...)
 
+use crate::display::HasDocs;
 use hir::{
     Adt, AsAssocItem, AssocItemContainer, FieldSource, HasSource, HirDisplay, ModuleDef,
     ModuleSource, Semantics,
@@ -10,12 +11,7 @@ use ra_ide_db::{
     defs::{classify_name, classify_name_ref, Definition},
     RootDatabase,
 };
-use ra_syntax::{
-    ast::{self, DocCommentsOwner},
-    match_ast, AstNode,
-    SyntaxKind::*,
-    SyntaxToken, TokenAtOffset,
-};
+use ra_syntax::{ast, match_ast, AstNode, SyntaxKind::*, SyntaxToken, TokenAtOffset};
 
 use crate::{
     display::{macro_label, rust_code_markup, rust_code_markup_with_doc, ShortLabel},
@@ -114,24 +110,28 @@ fn hover_text_from_name_kind(db: &RootDatabase, def: Definition) -> Option<Strin
     return match def {
         Definition::Macro(it) => {
             let src = it.source(db);
-            hover_text(src.value.doc_comment_text(), Some(macro_label(&src.value)), mod_path)
+            hover_text(it.docs(db).map(Into::into), Some(macro_label(&src.value)), mod_path)
         }
         Definition::Field(it) => {
+            let doc = it.docs(db);
             let src = it.source(db);
             match src.value {
                 FieldSource::Named(it) => {
-                    hover_text(it.doc_comment_text(), it.short_label(), mod_path)
+                    hover_text(doc.map(Into::into), it.short_label(), mod_path)
                 }
                 _ => None,
             }
         }
         Definition::ModuleDef(it) => match it {
-            ModuleDef::Module(it) => match it.definition_source(db).value {
-                ModuleSource::Module(it) => {
-                    hover_text(it.doc_comment_text(), it.short_label(), mod_path)
+            ModuleDef::Module(it) => {
+                let doc = it.docs(db);
+                match it.definition_source(db).value {
+                    ModuleSource::Module(it) => {
+                        hover_text(doc.map(Into::into), it.short_label(), mod_path)
+                    }
+                    _ => None,
                 }
-                _ => None,
-            },
+            }
             ModuleDef::Function(it) => from_def_source(db, it, mod_path),
             ModuleDef::Adt(Adt::Struct(it)) => from_def_source(db, it, mod_path),
             ModuleDef::Adt(Adt::Union(it)) => from_def_source(db, it, mod_path),
@@ -152,11 +152,12 @@ fn hover_text_from_name_kind(db: &RootDatabase, def: Definition) -> Option<Strin
 
     fn from_def_source<A, D>(db: &RootDatabase, def: D, mod_path: Option<String>) -> Option<String>
     where
-        D: HasSource<Ast = A>,
-        A: ast::DocCommentsOwner + ast::NameOwner + ShortLabel,
+        D: HasSource<Ast = A> + HasDocs,
+        A: ast::NameOwner + ShortLabel,
     {
+        let doc = def.docs(db);
         let src = def.source(db);
-        hover_text(src.value.doc_comment_text(), src.value.short_label(), mod_path)
+        hover_text(doc.map(Into::into), src.value.short_label(), mod_path)
     }
 }
 

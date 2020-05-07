@@ -305,11 +305,11 @@ macro_rules! ast_enums {
 pub(crate) const AST_SRC: AstSrc = AstSrc {
     tokens: &["Whitespace", "Comment", "String", "RawString"],
     nodes: &ast_nodes! {
-        struct SourceFile: ModuleItemOwner, AttrsOwner, DocCommentsOwner {
+        struct SourceFile: ModuleItemOwner, AttrsOwner{
             modules: [Module],
         }
 
-        struct FnDef: VisibilityOwner, NameOwner, TypeParamsOwner, DocCommentsOwner, AttrsOwner {
+        struct FnDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner {
             Abi,
             T![const],
             T![default],
@@ -324,26 +324,26 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
 
         struct RetType { T![->], TypeRef }
 
-        struct StructDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner {
+        struct StructDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner{
             T![struct],
             FieldDefList,
             T![;]
         }
 
-        struct UnionDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner {
+        struct UnionDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner{
             T![union],
             RecordFieldDefList,
         }
 
         struct RecordFieldDefList { T!['{'], fields: [RecordFieldDef], T!['}'] }
-        struct RecordFieldDef: VisibilityOwner, NameOwner, AttrsOwner, DocCommentsOwner, TypeAscriptionOwner { }
+        struct RecordFieldDef: VisibilityOwner, NameOwner, AttrsOwner, TypeAscriptionOwner { }
 
         struct TupleFieldDefList { T!['('], fields: [TupleFieldDef], T![')'] }
         struct TupleFieldDef: VisibilityOwner, AttrsOwner {
             TypeRef,
         }
 
-        struct EnumDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner {
+        struct EnumDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner{
             T![enum],
             variant_list: EnumVariantList,
         }
@@ -352,20 +352,20 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
             variants: [EnumVariant],
             T!['}']
         }
-        struct EnumVariant: VisibilityOwner, NameOwner, DocCommentsOwner, AttrsOwner {
+        struct EnumVariant: VisibilityOwner, NameOwner, AttrsOwner {
             FieldDefList,
             T![=],
             Expr
         }
 
-        struct TraitDef: VisibilityOwner, NameOwner, AttrsOwner, DocCommentsOwner, TypeParamsOwner, TypeBoundsOwner {
+        struct TraitDef: VisibilityOwner, NameOwner, AttrsOwner, TypeParamsOwner, TypeBoundsOwner {
             T![unsafe],
             T![auto],
             T![trait],
             ItemList,
         }
 
-        struct Module: VisibilityOwner, NameOwner, AttrsOwner, DocCommentsOwner {
+        struct Module: VisibilityOwner, NameOwner, AttrsOwner{
             T![mod],
             ItemList,
             T![;]
@@ -377,7 +377,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
             T!['}']
         }
 
-        struct ConstDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner, TypeAscriptionOwner {
+        struct ConstDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, TypeAscriptionOwner {
             T![default],
             T![const],
             T![=],
@@ -385,7 +385,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
             T![;]
         }
 
-        struct StaticDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner, TypeAscriptionOwner {
+        struct StaticDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, TypeAscriptionOwner {
             T![static],
             T![mut],
             T![=],
@@ -393,7 +393,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
             T![;]
         }
 
-        struct TypeAliasDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, DocCommentsOwner, TypeBoundsOwner {
+        struct TypeAliasDef: VisibilityOwner, NameOwner, TypeParamsOwner, AttrsOwner, TypeBoundsOwner {
             T![default],
             T![type],
             T![=],
@@ -401,7 +401,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
             T![;]
         }
 
-        struct ImplDef: TypeParamsOwner, AttrsOwner, DocCommentsOwner {
+        struct ImplDef: TypeParamsOwner, AttrsOwner{
             T![default],
             T![const],
             T![unsafe],
@@ -521,7 +521,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
         struct Name { T![ident] }
         struct NameRef { /*NameRefToken*/ }
 
-        struct MacroCall: NameOwner, AttrsOwner,DocCommentsOwner {
+        struct MacroCall: NameOwner, AttrsOwner {
             Path, T![!], TokenTree, T![;]
         }
         struct Attr { T![#], T![!], T!['['], Path, T![=], input: AttrInput, T![']'] }

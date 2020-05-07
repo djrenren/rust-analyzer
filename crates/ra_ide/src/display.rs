@@ -1,6 +1,7 @@
 //! This module contains utilities for turning SyntaxNodes and HIR types
 //! into types that may be used to render in a UI.
 
+mod documentation;
 mod function_signature;
 mod navigation_target;
 mod structure;
@@ -14,10 +15,12 @@ use ra_syntax::{
 };
 use stdx::format_to;
 
+pub use documentation::Documentation;
 pub use function_signature::FunctionSignature;
 pub use navigation_target::NavigationTarget;
 pub use structure::{file_structure, StructureNode};
 
+pub(crate) use documentation::HasDocs;
 pub(crate) use navigation_target::{ToNav, TryToNav};
 pub(crate) use short_label::ShortLabel;
 

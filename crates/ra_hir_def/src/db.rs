@@ -11,7 +11,6 @@ use crate::{
     attr::Attrs,
     body::{scope::ExprScopes, Body, BodySourceMap},
     data::{ConstData, FunctionData, ImplData, TraitData, TypeAliasData},
-    docs::Documentation,
     generics::GenericParams,
     lang_item::{LangItemTarget, LangItems},
     nameres::{raw::RawItems, CrateDefMap},
@@ -103,11 +102,6 @@ pub trait DefDatabase: InternDatabase + AstDatabase + Upcast<dyn AstDatabase> {
 
     #[salsa::invoke(LangItems::lang_item_query)]
     fn lang_item(&self, start_crate: CrateId, item: SmolStr) -> Option<LangItemTarget>;
-
-    // FIXME(https://github.com/rust-analyzer/rust-analyzer/issues/2148#issuecomment-550519102)
-    // Remove this query completely, in favor of `Attrs::docs` method
-    #[salsa::invoke(Documentation::documentation_query)]
-    fn documentation(&self, def: AttrDefId) -> Option<Documentation>;
 }
 
 fn crate_def_map_wait(db: &impl DefDatabase, krate: CrateId) -> Arc<CrateDefMap> {

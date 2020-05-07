@@ -215,13 +215,14 @@ impl CallInfo {
 mod tests {
     use test_utils::covers;
 
+    use crate::display::Documentation;
     use crate::mock_analysis::single_file_with_position;
 
     use super::*;
 
     // These are only used when testing
     impl CallInfo {
-        fn doc(&self) -> Option<hir::Documentation> {
+        fn doc(&self) -> Option<Documentation> {
             self.signature.doc.clone()
         }
 

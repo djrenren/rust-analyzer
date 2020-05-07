@@ -333,7 +333,6 @@ impl RootDatabase {
             hir::db::ModuleLangItemsQuery
             hir::db::CrateLangItemsQuery
             hir::db::LangItemQuery
-            hir::db::DocumentationQuery
 
             // InternDatabase
             hir::db::InternFunctionQuery

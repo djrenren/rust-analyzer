@@ -8,7 +8,7 @@ use ra_parser::SyntaxKind;
 
 use crate::{
     ast::{self, support, AstNode, AttrInput, NameOwner, SyntaxNode},
-    SmolStr, SyntaxElement, SyntaxToken, T,
+    AstToken, SmolStr, SyntaxElement, SyntaxToken, T,
 };
 
 impl ast::Name {
@@ -470,5 +470,38 @@ impl ast::TokenTree {
             T!['}'] | T![')'] | T![']'] => true,
             _ => false,
         })
+    }
+}
+
+impl ast::Comment {
+    /// Returns the textual content of a doc comment block as a single string.
+    /// That is, strips leading `///` (+ optional 1 character of whitespace),
+    /// trailing `*/`, trailing whitespace and then joins the lines.
+    pub fn doc_comment_text(&self) -> Option<String> {
+        if self.kind().doc.is_none() {
+            return None;
+        }
+
+        let prefix_len = self.prefix().len();
+
+        let line: &str = self.text().as_str();
+
+        // Determine if the prefix or prefix + 1 char is stripped
+        let pos = if let Some(ws) = line.chars().nth(prefix_len).filter(|c| c.is_whitespace()) {
+            prefix_len + ws.len_utf8()
+        } else {
+            prefix_len
+        };
+
+        let end = if self.kind().shape.is_block() && line.ends_with("*/") {
+            line.len() - 2
+        } else {
+            line.len()
+        };
+
+        // Note that we do not trim the end of the line here
+        // since whitespace can have special meaning at the end
+        // of a line in markdown.
+        Some(line[pos..end].to_owned())
     }
 }

@@ -1,11 +1,11 @@
 //! FIXME: write short doc here
-
+use super::documentation::HasDocs;
 use either::Either;
 use hir::{original_range, AssocItem, FieldSource, HasSource, InFile, ModuleSource};
 use ra_db::{FileId, SourceDatabase};
 use ra_ide_db::{defs::Definition, RootDatabase};
 use ra_syntax::{
-    ast::{self, DocCommentsOwner, NameOwner},
+    ast::{self, NameOwner},
     match_ast, AstNode, SmolStr,
     SyntaxKind::{self, BIND_PAT, TYPE_PARAM},
     TextRange,
@@ -93,7 +93,7 @@ impl NavigationTarget {
                 None,
                 frange.range,
                 src.value.syntax().kind(),
-                src.value.doc_comment_text(),
+                module.docs(db).map(Into::into),
                 src.value.short_label(),
             );
         }
@@ -180,7 +180,7 @@ impl ToNav for FileSymbol {
             focus_range: self.name_range,
             container_name: self.container_name.clone(),
             description: description_from_symbol(db, self),
-            docs: docs_from_symbol(db, self),
+            docs: None, //TODO: docs_from_symbol(db, self),
         }
     }
 }
@@ -228,15 +228,15 @@ impl ToNavFromAst for hir::Trait {}
 
 impl<D> ToNav for D
 where
-    D: HasSource + ToNavFromAst + Copy,
-    D::Ast: ast::DocCommentsOwner + ast::NameOwner + ShortLabel,
+    D: HasDocs + HasSource + ToNavFromAst + Copy,
+    D::Ast: ast::NameOwner + ShortLabel,
 {
     fn to_nav(&self, db: &RootDatabase) -> NavigationTarget {
         let src = self.source(db);
         NavigationTarget::from_named(
             db,
             src.as_ref().map(|it| it as &dyn ast::NameOwner),
-            src.value.doc_comment_text(),
+            self.docs(db).map(Into::into),
             src.value.short_label(),
         )
     }
@@ -294,7 +294,7 @@ impl ToNav for hir::Field {
             FieldSource::Named(it) => NavigationTarget::from_named(
                 db,
                 src.with_value(it),
-                it.doc_comment_text(),
+                self.docs(db).map(Into::into),
                 it.short_label(),
             ),
             FieldSource::Pos(it) => {
@@ -320,7 +320,7 @@ impl ToNav for hir::MacroDef {
         NavigationTarget::from_named(
             db,
             src.as_ref().map(|it| it as &dyn ast::NameOwner),
-            src.value.doc_comment_text(),
+            self.docs(db).map(Into::into),
             None,
         )
     }
@@ -397,27 +397,27 @@ impl ToNav for hir::TypeParam {
     }
 }
 
-pub(crate) fn docs_from_symbol(db: &RootDatabase, symbol: &FileSymbol) -> Option<String> {
-    let parse = db.parse(symbol.file_id);
-    let node = symbol.ptr.to_node(parse.tree().syntax());
+// pub(crate) fn docs_from_symbol(db: &RootDatabase, symbol: &FileSymbol) -> Option<String> {
+//     let parse = db.parse(symbol.file_id);
+//     let node = symbol.ptr.to_node(parse.tree().syntax());
 
-    match_ast! {
-        match node {
-            ast::FnDef(it) => it.doc_comment_text(),
-            ast::StructDef(it) => it.doc_comment_text(),
-            ast::EnumDef(it) => it.doc_comment_text(),
-            ast::TraitDef(it) => it.doc_comment_text(),
-            ast::Module(it) => it.doc_comment_text(),
-            ast::TypeAliasDef(it) => it.doc_comment_text(),
-            ast::ConstDef(it) => it.doc_comment_text(),
-            ast::StaticDef(it) => it.doc_comment_text(),
-            ast::RecordFieldDef(it) => it.doc_comment_text(),
-            ast::EnumVariant(it) => it.doc_comment_text(),
-            ast::MacroCall(it) => it.doc_comment_text(),
-            _ => None,
-        }
-    }
-}
+//     match_ast! {
+//         match node {
+//             ast::FnDef(it) => it.doc_comment_text(),
+//             ast::StructDef(it) => it.doc_comment_text(),
+//             ast::EnumDef(it) => it.doc_comment_text(),
+//             ast::TraitDef(it) => it.doc_comment_text(),
+//             ast::Module(it) => it.doc_comment_text(),
+//             ast::TypeAliasDef(it) => it.doc_comment_text(),
+//             ast::ConstDef(it) => it.doc_comment_text(),
+//             ast::StaticDef(it) => it.doc_comment_text(),
+//             ast::RecordFieldDef(it) => it.doc_comment_text(),
+//             ast::EnumVariant(it) => it.doc_comment_text(),
+//             ast::MacroCall(it) => it.doc_comment_text(),
+//             _ => None,
+//         }
+//     }
+// }
 
 /// Get a description of a symbol.
 ///

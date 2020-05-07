@@ -12,7 +12,6 @@ pub struct SourceFile {
 }
 impl ast::ModuleItemOwner for SourceFile {}
 impl ast::AttrsOwner for SourceFile {}
-impl ast::DocCommentsOwner for SourceFile {}
 impl SourceFile {
     pub fn modules(&self) -> AstChildren<Module> { support::children(&self.syntax) }
 }
@@ -24,7 +23,6 @@ pub struct FnDef {
 impl ast::VisibilityOwner for FnDef {}
 impl ast::NameOwner for FnDef {}
 impl ast::TypeParamsOwner for FnDef {}
-impl ast::DocCommentsOwner for FnDef {}
 impl ast::AttrsOwner for FnDef {}
 impl FnDef {
     pub fn abi(&self) -> Option<Abi> { support::child(&self.syntax) }
@@ -56,7 +54,6 @@ impl ast::VisibilityOwner for StructDef {}
 impl ast::NameOwner for StructDef {}
 impl ast::TypeParamsOwner for StructDef {}
 impl ast::AttrsOwner for StructDef {}
-impl ast::DocCommentsOwner for StructDef {}
 impl StructDef {
     pub fn struct_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![struct]) }
     pub fn field_def_list(&self) -> Option<FieldDefList> { support::child(&self.syntax) }
@@ -71,7 +68,6 @@ impl ast::VisibilityOwner for UnionDef {}
 impl ast::NameOwner for UnionDef {}
 impl ast::TypeParamsOwner for UnionDef {}
 impl ast::AttrsOwner for UnionDef {}
-impl ast::DocCommentsOwner for UnionDef {}
 impl UnionDef {
     pub fn union_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![union]) }
     pub fn record_field_def_list(&self) -> Option<RecordFieldDefList> {
@@ -96,7 +92,6 @@ pub struct RecordFieldDef {
 impl ast::VisibilityOwner for RecordFieldDef {}
 impl ast::NameOwner for RecordFieldDef {}
 impl ast::AttrsOwner for RecordFieldDef {}
-impl ast::DocCommentsOwner for RecordFieldDef {}
 impl ast::TypeAscriptionOwner for RecordFieldDef {}
 impl RecordFieldDef {}
 
@@ -128,7 +123,6 @@ impl ast::VisibilityOwner for EnumDef {}
 impl ast::NameOwner for EnumDef {}
 impl ast::TypeParamsOwner for EnumDef {}
 impl ast::AttrsOwner for EnumDef {}
-impl ast::DocCommentsOwner for EnumDef {}
 impl EnumDef {
     pub fn enum_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![enum]) }
     pub fn variant_list(&self) -> Option<EnumVariantList> { support::child(&self.syntax) }
@@ -150,7 +144,6 @@ pub struct EnumVariant {
 }
 impl ast::VisibilityOwner for EnumVariant {}
 impl ast::NameOwner for EnumVariant {}
-impl ast::DocCommentsOwner for EnumVariant {}
 impl ast::AttrsOwner for EnumVariant {}
 impl EnumVariant {
     pub fn field_def_list(&self) -> Option<FieldDefList> { support::child(&self.syntax) }
@@ -165,7 +158,6 @@ pub struct TraitDef {
 impl ast::VisibilityOwner for TraitDef {}
 impl ast::NameOwner for TraitDef {}
 impl ast::AttrsOwner for TraitDef {}
-impl ast::DocCommentsOwner for TraitDef {}
 impl ast::TypeParamsOwner for TraitDef {}
 impl ast::TypeBoundsOwner for TraitDef {}
 impl TraitDef {
@@ -182,7 +174,6 @@ pub struct Module {
 impl ast::VisibilityOwner for Module {}
 impl ast::NameOwner for Module {}
 impl ast::AttrsOwner for Module {}
-impl ast::DocCommentsOwner for Module {}
 impl Module {
     pub fn mod_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![mod]) }
     pub fn item_list(&self) -> Option<ItemList> { support::child(&self.syntax) }
@@ -208,7 +199,6 @@ impl ast::VisibilityOwner for ConstDef {}
 impl ast::NameOwner for ConstDef {}
 impl ast::TypeParamsOwner for ConstDef {}
 impl ast::AttrsOwner for ConstDef {}
-impl ast::DocCommentsOwner for ConstDef {}
 impl ast::TypeAscriptionOwner for ConstDef {}
 impl ConstDef {
     pub fn default_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![default]) }
@@ -226,7 +216,6 @@ impl ast::VisibilityOwner for StaticDef {}
 impl ast::NameOwner for StaticDef {}
 impl ast::TypeParamsOwner for StaticDef {}
 impl ast::AttrsOwner for StaticDef {}
-impl ast::DocCommentsOwner for StaticDef {}
 impl ast::TypeAscriptionOwner for StaticDef {}
 impl StaticDef {
     pub fn static_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![static]) }
@@ -244,7 +233,6 @@ impl ast::VisibilityOwner for TypeAliasDef {}
 impl ast::NameOwner for TypeAliasDef {}
 impl ast::TypeParamsOwner for TypeAliasDef {}
 impl ast::AttrsOwner for TypeAliasDef {}
-impl ast::DocCommentsOwner for TypeAliasDef {}
 impl ast::TypeBoundsOwner for TypeAliasDef {}
 impl TypeAliasDef {
     pub fn default_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![default]) }
@@ -260,7 +248,6 @@ pub struct ImplDef {
 }
 impl ast::TypeParamsOwner for ImplDef {}
 impl ast::AttrsOwner for ImplDef {}
-impl ast::DocCommentsOwner for ImplDef {}
 impl ImplDef {
     pub fn default_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![default]) }
     pub fn const_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![const]) }
@@ -969,7 +956,6 @@ pub struct MacroCall {
 }
 impl ast::NameOwner for MacroCall {}
 impl ast::AttrsOwner for MacroCall {}
-impl ast::DocCommentsOwner for MacroCall {}
 impl MacroCall {
     pub fn path(&self) -> Option<Path> { support::child(&self.syntax) }
     pub fn excl_token(&self) -> Option<SyntaxToken> { support::token(&self.syntax, T![!]) }
